@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="springboot-highcharts" />
+        <module name="springboot-provider" />
+        <module name="springboot-poi-xf" />
+        <module name="springboot-consumer" />
+        <module name="springboot-solr" />
+        <module name="springboot-poi-sc" />
+        <module name="quanxian-ysq" />
+        <module name="springboot-dubbo-consumer" />
+        <module name="springboot-dubbo-provider" />
+        <module name="springboot-shiro" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="demo-ysq" target="1.8" />
+      <module name="dubbo-provider" target="1.5" />
+      <module name="spring-api" target="1.7" />
+      <module name="stringboot-dubbo-anntion" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="demo-ysq" options="-parameters" />
+      <module name="dubbo-provider" options="" />
+      <module name="quanxian-ysq" options="-parameters" />
+      <module name="springboot-consumer" options="-parameters" />
+      <module name="springboot-dubbo-consumer" options="-parameters" />
+      <module name="springboot-dubbo-provider" options="-parameters" />
+      <module name="springboot-highcharts" options="-parameters" />
+      <module name="springboot-poi-sc" options="-parameters" />
+      <module name="springboot-poi-xf" options="-parameters" />
+      <module name="springboot-provider" options="-parameters" />
+      <module name="springboot-shiro" options="-parameters" />
+      <module name="springboot-solr" options="-parameters" />
+      <module name="stringboot-dubbo-anntion" options="-parameters" />
+    </option>
+  </component>
+</project>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.JueDao" >
+    <!-- 查角色 -->
+    <select id="queryRoleList" resultType="com.jk.model.Role">
+	select r_id as rid,r_name as rname from t_role
+    </select>
+    <!-- 单删 -->
+    <delete id="deleteRole" parameterType="int">
+	delete from t_role where r_id = #{rid}
+    </delete>
+    <!--新增  -->
+    <insert id="addRole" parameterType="com.jk.model.Role">
+	insert into t_role (r_name) values (#{rname})
+    </insert>
+    <!-- 修改回显 -->
+    <select id="queryRoleById" parameterType="int" resultType="com.jk.model.Role">
+	select r_id rid,r_name rname from t_role where r_id = #{rid}
+    </select>
+    <!--修改  -->
+    <update id="updateRole" parameterType="com.jk.model.Role">
+	update t_role set r_name=#{rname} where r_id=#{rid}
+    </update>
+
+    <!--查弹框树  -->
+    <select id="queryMenuTree" resultType="com.jk.model.Tree">
+  	select * from t_tree where pid = #{pid}
+    </select>
+
+    <!-- 查所被选中的 -->
+    <select id="queryMenuIdByRid" resultType="java.lang.Integer">
+        select rm.menuid
+        from t_role_menu rm
+        where rm.roleid = #{rid}
+    </select>
+
+    <!-- 被更改了   需要删除 -->
+    <delete id="deleteMenuByRid">
+	delete from t_role_menu where roleid = #{rid}
+    </delete>
+
+    <insert id="saveRoleMenu">
+        insert into t_role_menu (roleid,menuid) values
+        <foreach collection="mids" index="index" item="mid" separator=",">
+            (#{rid},${mid})
+        </foreach>
+    </insert>
+
+    <!-- 查名字 -->
+    <select id="queryUserName" parameterType="String" resultType="com.jk.model.User">
+	select tt.id,tt.name,tt.passWord from t_users tt where tt.name = #{userName}
+    </select>
+
+</mapper>

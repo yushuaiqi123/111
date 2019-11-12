@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- jqeuy默认的css样式 -->
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+
+    <!-- 这是jquery的核心包  -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!-- 这是easyui的核心包  -->
+    <script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+
+</head>
+<body>
+角色页面
+
+
+
+<div id="role-div" >
+    <ul id="rolemenu-ul"></ul>
+
+</div>
+
+<div id="tool">
+    <a href="javascript:openAdd()" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">新增</a>
+</div>
+<table id="roleTable"></table>
+
+<div id="UserDialog" class="easyui-dialog" data-options="closed:true,width:500,height:350,buttons:'#bt'">
+    <form id="addForm" method="post">
+
+        <input name="rid" style="display:none">
+        角色名:<input class="easyui-textbox" name="rname">
+    </form>
+</div>
+
+<div id="bt">
+    <a href="javascript:Add()" class="easyui-linkbutton" >保存</a>
+    <a href="javascript:close()" class="easyui-linkbutton" >取消</a>
+</div>
+<script type="text/javascript">
+    $(function(){
+        initTable();
+    })
+
+    initTable = function(){
+        $("#roleTable").datagrid({
+            columns:[[
+                {title:"编号",field:"rid",width:"100"},
+                {title:"角色名",field:"rname",width:"100"},
+                {title:"操作1",field:"tools",width:"100",formatter:function(value,row,index){
+                        var str = "<a href='javascript:delRole("+row.rid+")'>删除</a>"+"   ||   "+
+                            "<a href='javascript:openUpdateRole("+row.rid+")'>修改</a>"
+                        return str
+                            ;
+                    }
+                    },
+                {field:'act',title:'操作2',width:100,
+                    formatter:function(val,row,index){
+                        var str = "<input type='button' onclick='changeRoleMenu("+row.rid+",\""+row.rname+"\")' value='设置权限'>";
+                        return str;
+                    }}
+            ]
+            ],
+            url:"../queryRoleList",
+            /* pagination:true,//开启分页
+              pageList:[2,4,6,8],
+              pageSize:4,
+              pageNumber:1,
+              fit:true,     //全屏展示数据
+              toolbar:"#tools",	//工具栏  */
+        })
+    }
+    //删除
+    function delRole(rid){
+        $.ajax({
+            url:"../deleteRole",
+            data:{rid:rid},
+            success:function(){
+                initTable();
+            }
+        })
+    }
+
+    //新增
+    function openAdd(){
+
+        $("#addForm").form("reset");
+        $("#UserDialog").dialog({
+            closed:false,
+            title:"新增用户"
+        })
+    }
+    function close(){
+        $("#UserDialog").dialog("close");
+    }
+
+    function Add(){
+        $("#addForm").form("submit",{
+            url:"../addRole",
+            success:function(){
+
+                close();
+                initTable();
+            }
+        })
+    }
+
+
+    //打开修改弹框：回显表单数据
+    function openUpdateRole(rid){
+        $.ajax({
+            url:"../queryRoleById",
+            type:"post",
+            data:{rid:rid},
+            success:function(data){
+                //回显表单数据
+                $("#addForm").form("load",data);
+                //打开弹框
+                $("#UserDialog").dialog({
+                    closed:false,
+                    title:'修改用户'
+                });
+            }
+        })
+    }
+
+    function changeRoleMenu(rid,rname){
+        $('#rolemenu-ul').tree({
+            url:'../queryRoleMenu?rid='+rid,
+            checkbox:true
+        });
+        $('#role-div').dialog({
+            title: '设置'+rname+'的权限',
+            width: 500,
+            height: 300,
+            closed: false,
+            modal: true,
+            buttons:[{
+                text:'保存',
+                handler:function(){
+                    var menuArr = $('#rolemenu-ul').tree("getChecked");
+                    var nodes = $('#rolemenu-ul').tree('getChecked', 'indeterminate');
+                    console.info(nodes)
+                    var mids = "";
+                    console.info(menuArr)
+                    for (var i = 0; i < menuArr.length; i++) {
+                        mids += ","+menuArr[i].id;
+                    }
+                    for (var i = 0; i < nodes.length; i++) {
+                        mids += ","+nodes[i].id;
+                    }
+                    mids = mids.substring(1);
+                    $.ajax({
+                        type:"post",
+                        url:"../saveRoleMenu",
+                        data:{rid:rid,menuIds:mids},
+                        success:function(msg){
+                            if(msg == 'suc'){
+                                $('#role-div').dialog("close")
+                                $.messager.show({
+                                    title:'新消息',
+                                    msg:'操作成功',
+                                    timeout:2000,
+                                    showType:'slide'
+                                });
+
+                            }
+                        }
+                    })
+                }
+            },{
+                text:'取消',
+                handler:function(){
+                    $('#role-div').dialog("close")
+                }
+            }
+            ]
+        });
+    }
+
+</script>
+</body>
+</html>

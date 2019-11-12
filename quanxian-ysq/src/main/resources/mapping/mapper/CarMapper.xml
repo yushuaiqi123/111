@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.TreeDao" >
+
+  <select id="findNodes" resultType="com.jk.model.Tree">
+    SELECT  * FROM t_tree where pid=#{pid}
+  </select>
+
+    <select id="queryUserMenuTree" resultType="com.jk.model.Tree">
+	SELECT DISTINCT m.*
+	from t_user_role ur , t_role_menu rm , t_tree m
+	where
+	ur.roleid = rm.roleid
+	and rm.menuid = m.id
+	and ur.userid = #{id}
+	and m.pid = #{pid}
+
+    </select>
+    
+    <!--查用户  -->
+  <select id="queryUserList" resultType="com.jk.model.User">
+	select id,name from t_users
+  </select>
+  <!-- 单删 -->
+  <delete id="deleteUser" parameterType="int">
+	delete from t_users where id = #{id}
+  </delete>
+  <!--新增  -->
+  <insert id="adduser" parameterType="com.jk.model.User">
+	insert into t_users (name) values (#{name})
+  </insert>
+  <!-- 修改回显 -->
+  <select id="queryUserById" parameterType="int" resultType="com.jk.model.User">
+	select * from t_users u where u.id = #{id}
+  </select>
+  <!--修改  -->
+  <update id="updateUser" parameterType="com.jk.model.User">
+	update t_users u set u.name=#{name} where u.id=#{id}
+</update>
+
+  <!--查  -->
+  <select id="queryRoleAll" resultType="com.jk.model.Role">
+	select r_id rid,r_name rname from t_role
+  </select>
+
+
+  <select id="queryUserRole" resultType="java.lang.Integer">
+	select ur.roleid from t_user_role ur where ur.userid = #{id}
+  </select>
+
+    <delete id="deleteUserRoleByUid">
+  	delete from t_user_role where userid = #{id}
+   </delete>
+
+
+    <insert id="saveUserRole">
+        insert into t_user_role(userid,roleid) values
+        <foreach item="aaa" index="index" collection="rids" separator=",">
+            (#{id},${aaa})
+        </foreach>
+    </insert>
+
+
+
+</mapper>

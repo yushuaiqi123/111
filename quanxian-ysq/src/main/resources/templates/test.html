@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- jqeuy默认的css样式 -->
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+
+    <!-- 这是jquery的核心包  -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!-- 这是easyui的核心包  -->
+    <script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+
+</head>
+<body>
+
+<div id="user-div"></div>
+
+<div id="tool">
+    <a href="javascript:openAdd()" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">新增</a>
+</div>
+
+<table id="userTable"></table>
+
+<div id="UserDialog" class="easyui-dialog" data-options="closed:true,width:500,height:350,buttons:'#bt'">
+    <form id="addForm" method="post">
+        <input name="id" style="display:none">
+        姓名:<input class="easyui-textbox" name="name">
+    </form>
+</div>
+
+<div id="bt">
+    <a href="javascript:Add()" class="easyui-linkbutton" >保存</a>
+    <a href="javascript:close()" class="easyui-linkbutton" >取消</a>
+</div>
+<script type="text/javascript">
+    $(function(){
+        initTable();
+    })
+    initTable = function(){
+        $("#userTable").datagrid({
+            columns:[
+                [
+                {title:"编号",field:"id",width:"100"},
+                {title:"姓名",field:"name",width:"100"},
+                {title:"操作1",field:"tools",width:"100",formatter:function(value,row,index){
+                        var str = "<a href='javascript:delUser("+row.id+")'>删除</a>"+"   ||   "+
+                            "<a href='javascript:openUpdate("+row.id+")'>修改</a>"
+                        return str
+                            ;
+                    }},
+                {field:'act',title:'操作2',width:100,formatter:function(val,row,index){
+                        var str = "<input type='button' onclick='changeUserRole("+row.id+",\""+row.name+"\")' value='设置角色'>";
+                        return str;
+                    }}
+            ]
+            ],
+            url:"../queryUserList",
+            /* pagination:true,//开启分页
+              pageList:[2,4,6,8],
+              pageSize:4,
+              pageNumber:1,
+              fit:true,     //全屏展示数据
+              toolbar:"#tools",	//工具栏  */
+        })
+    }
+
+    //删除
+    function delUser(id){
+        $.ajax({
+            url:"../deleteUser",
+            data:{id:id},
+            success:function(){
+                initTable();
+            }
+        })
+    }
+
+    //新增
+    function openAdd(){
+
+        $("#addForm").form("reset");
+        $("#UserDialog").dialog({
+            closed:false,
+            title:"新增用户"
+        })
+    }
+    function close(){
+        $("#UserDialog").dialog("close");
+    }
+
+    function Add(){
+        $("#addForm").form("submit",{
+            url:"../adduser",
+            success:function(){
+
+                close();
+                initTable();
+            }
+        })
+    }
+
+
+    //打开修改弹框：回显表单数据
+    function openUpdate(id){
+        $.ajax({
+            url:"../queryUserById",
+            type:"post",
+            data:{id:id},
+            success:function(data){
+                //回显表单数据
+                $("#addForm").form("load",data);
+                //打开弹框
+                $("#UserDialog").dialog({
+                    closed:false,
+                    title:'修改用户'
+                });
+            }
+        })
+    }
+    //设置角色
+    function changeUserRole(id,name){
+        $('#user-div').dialog({
+            title: '设置'+name+'的角色',
+            width: 400,
+            height: 300,
+            closed: false,
+            href: '../toEditUserRole?id='+id,
+            modal: true,
+            buttons:[{
+                text:'保存',
+                handler:function(){
+                    var rolearr = $("[name='rids']:checked");
+                    var rids = "";
+                    for (var i = 0; i < rolearr.length; i++){
+                        rids += ","+rolearr[i].value;
+                    }
+                    rids = rids.substring(1);
+                    $.ajax({
+                        type:"post",
+                        url:"../saveUserRole",
+                        data:{id:id,rids:rids},
+                        success:function(msg){
+                            if(msg == 'suc'){
+                                $('#user-div').dialog("close")
+                                $.messager.show({
+                                    title:'新消息',
+                                    msg:'操作成功',
+                                    timeout:2000,
+                                    showType:'slide'
+                                });
+                            }
+                        }
+                    })
+                }
+            },{
+                text:'取消',
+                handler:function(){
+                    $('#user-div').dialog("close")
+                }
+            }]
+        });
+    }
+
+
+</script>
+</body>
+</html>

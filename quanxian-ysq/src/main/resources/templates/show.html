@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+
+    <!-- jqeuy默认的css样式 -->
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+
+    <link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+
+    <!-- 这是jquery的核心包  -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <!-- 这是easyui的核心包  -->
+    <script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript" src="../js/easyui/locale/easyui-lang-zh_CN.js"></script>
+
+</head>
+
+<body>
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north',height:100">
+        <font color="#096" size="4">
+            今日天气:<span id="dd"></span>
+        </font>
+    </div>
+    <div data-options="region:'west',width:200,title:'导航菜单'">
+        <ul id="navTree"></ul>
+    </div>
+    <div data-options="region:'center'">
+        <div class="easyui-tabs" id="mytabs" data-options="fit:true"></div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function(){
+
+        initTree();
+    })
+
+    function initTree(){
+
+        $("#navTree").tree({
+            url: "../queryTree",
+            parentField: 'pid',
+            onClick: function(node){
+                if(node.url != null && "" != node.url){
+                    if($("#mytabs").tabs("exists" , node.text)){
+                        //选中
+                        $("#mytabs").tabs("select" , node.text)
+                    } else {
+                        // 添加
+                        $("#mytabs").tabs("add", {
+                            // 添加选项卡
+                            title: node.text,
+                            content: createIframe(node.url),
+                            closable:true,  // 关闭
+                            tools:[{
+                                iconCls:'icon-mini-refresh',
+                                handler:function(){
+                                    // 更新选项卡
+                                    var tab = $('#mytabs').tabs('getSelected');
+                                    $("#mytabs").tabs('update',{
+                                        tab: tab,
+                                        options:{
+                                            content: createIframe(node.url)
+                                        }
+                                    });
+                                }
+                            }]
+                        })
+                    }
+                }
+            }
+        })
+
+    }
+
+    function createIframe(url){
+        return '<iframe scrolling="atuo" frameborder="0" src="../'+url+'" style="width:100%; height:100%"/>';
+    }
+
+
+
+</script>
+</html>
