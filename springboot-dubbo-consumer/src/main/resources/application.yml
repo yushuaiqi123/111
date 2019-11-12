@@ -1,0 +1,17 @@
+dubbo:
+  application:
+    name: dubbox-consumer
+  protocol:
+    host: localhost
+    name: dubbo
+    port: 20880
+  registry:
+    address: localhost:2181
+    protocol: zookeeper
+server:
+  port: 8095
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html

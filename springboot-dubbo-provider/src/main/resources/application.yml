@@ -1,0 +1,26 @@
+dubbo:
+  application:
+    name: dubbox-provider
+  protocol:
+    host: localhost
+    name: dubbo
+    port: 20880
+  registry:
+    address: localhost:2181
+    protocol: zookeeper
+  scan:
+    basePackages: com.jk.service
+mybatis:
+  config-locations: classpath:mapping/confg.xml
+  mapper-locations: classpath:mapping/mapper/*.xml
+  type-aliases-package: com.jk.model
+server:
+  port: 8085
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    password: 123
+    url: jdbc:mysql://localhost:3306/1905?useUnicode=true&characterEncoding=utf-8
+    username: root
+  dubbo:
+    server: true
